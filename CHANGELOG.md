@@ -1,5 +1,22 @@
 # BisTooltip Changelog
 
+## Version 2.2.0-3.3.5a (2026-02-13)
+
+### Bug Fixes
+
+1. **Slash Commands Restored**
+   - `/bis` and `/bistooltip` commands were not working due to missing registration in the active code path
+   - Both commands now fully functional with subcommands: `config`, `reload`, `help`
+   - Short aliases: `/bis c` (config), `/bis r` (reload)
+
+2. **Cross-Faction T9 Tooltip Fix**
+   - Fixed "Your Class NO BIS" showing for all T9 (and other faction-specific) items when hovering over equipped gear
+   - Root cause: BIS lists store Horde item IDs, but Alliance players see Alliance IDs in tooltips - no reverse mapping was performed
+   - Added `GetBisCanonicalID()` with lazy-built reverse cache for O(1) Alliance-to-Horde ID normalization
+   - Fully supports cross-faction private servers where players may have mixed faction items
+
+---
+
 ## Version 1.3.8-3.3.5a
 
 ### Bug Fixes
@@ -90,6 +107,7 @@
 
 | Version | Key Changes |
 |---------|-------------|
+| 2.2.0 | Slash commands fix, cross-faction T9 tooltip fix |
 | 1.3.0 | Lock Phase, Customize Mode, Slot Locking |
 | 1.3.1 | Click-to-Swap, Reset Button |
 | 1.3.2 | Tooltip options, Lock Phase filtering |

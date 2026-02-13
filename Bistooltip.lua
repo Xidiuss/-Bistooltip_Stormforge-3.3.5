@@ -596,6 +596,25 @@ local function RefreshAnyTooltip(tt)
 end
 
 -- ============================================================
+-- Horde/Alliance Item ID Normalization for BIS Lookup
+-- BIS lists store Horde IDs. On cross-faction or Alliance clients,
+-- equipped items may have Alliance IDs that need reverse mapping.
+-- ============================================================
+
+local aliToHordeLookup = nil
+
+local function GetBisCanonicalID(itemId)
+    if not itemId or not _G.Bistooltip_horde_to_ali then return itemId end
+    if not aliToHordeLookup then
+        aliToHordeLookup = {}
+        for hordeId, aliId in pairs(_G.Bistooltip_horde_to_ali) do
+            aliToHordeLookup[aliId] = hordeId
+        end
+    end
+    return aliToHordeLookup[itemId] or itemId
+end
+
+-- ============================================================
 -- Main Tooltip Handler
 -- ============================================================
 
@@ -609,6 +628,10 @@ local function OnGameTooltipSetItem(tooltip)
     local _, itemIdStr = strsplit(":", link)
     local itemId = tonumber(itemIdStr)
     if not itemId then return end
+
+    -- Normalize to canonical BIS list ID (Horde version)
+    -- BIS lists store Horde IDs; cross-faction/Alliance items need reverse mapping
+    local bisItemId = GetBisCanonicalID(itemId)
 
     -- Check if BIS data is loaded
     if not Bistooltip_bislists or not Bistooltip_spec_icons then
@@ -648,7 +671,7 @@ local function OnGameTooltipSetItem(tooltip)
             tooltip:AddLine(" ", 1, 1, 0)
             tooltip:AddLine("Your Class:", 1, 1, 1)
 
-            local foundPhases = searchIDInBislistsClassSpec(Bistooltip_bislists, itemId, pClass, pSpec, true)
+            local foundPhases = searchIDInBislistsClassSpec(Bistooltip_bislists, bisItemId, pClass, pSpec, true)
             local icon = Utils.GetSpecIcon(pClass, pSpec)
             
             -- Build spec text with optional highlighting
@@ -711,7 +734,7 @@ local function OnGameTooltipSetItem(tooltip)
                 
                 -- Apply spec filtering - skip filtered specs AND player's spec
                 if not specFiltered(class, spec) and not isPlayerSpec then
-                    local foundPhases = searchIDInBislistsClassSpec(Bistooltip_bislists, itemId, class, spec, true)
+                    local foundPhases = searchIDInBislistsClassSpec(Bistooltip_bislists, bisItemId, class, spec, true)
                     if foundPhases then
                         anyFound = true
                         local rank = ParseBestRankFromPhases(foundPhases)

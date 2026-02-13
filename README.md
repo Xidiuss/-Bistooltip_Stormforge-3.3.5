@@ -26,7 +26,10 @@ A World of Warcraft 3.3.5a (WotLK) addon that displays Best-in-Slot (BiS) inform
 
 ## Usage
 
-- `/bis` or `/bislist` - Open the BiS checklist window
+- `/bis` or `/bistooltip` - Open the BiS checklist window
+- `/bis config` or `/bistooltip config` - Open settings
+- `/bis reload` or `/bistooltip reload` - Reload data
+- `/bistooltip help` - Show all available commands
 - Hover over items to see BiS information in tooltips
 - Use the class/spec dropdowns to view different specs
 - Toggle between MAIN and BIS tabs for different views
@@ -149,45 +152,25 @@ All WotLK classes and specs are supported:
 
 ## Changelog
 
+### v2.2.0 (2026-02-13)
+- **Fixed**: Slash commands `/bis` and `/bistooltip` now work (registration was missing)
+- **Fixed**: T9 and other faction-specific items no longer show "NO BIS" when hovering over equipped gear on cross-faction servers
+- **Added**: Slash command subcommands: `/bis config`, `/bis reload`, `/bistooltip help`
+
 ### v2.1.2 (2026-02-04)
-- cleared history and marked as release version 
+- cleared history and marked as release version
 
 ### v2.1.1 (2026-02-04)
 - **Fixed**: Options window now opens in front of main addon window
 - **Fixed**: CUSTOM mode button properly deactivates when switching to BIS tab
 - **Changed**: Bottom buttons unified to uppercase (RELOAD, RESET, DISCORD)
 
-
 ### v2.1.0 (2026-02-04)
-
-#### Bug Fixes
-- **Shift+Click linking**: Gems and enchants can now be linked to chat via Shift+Click
-  - Added `IsShiftKeyDown()` check to `MakeIconClickable()` in BislistUI.lua
-  - Added OnClick handlers to 6 native frame buttons for gems/enchants
-  - Fixed nil link issue by fetching fresh links at click time
-- **sortByTier undefined**: Fixed critical runtime error in Constants.lua:633
-  - Changed `sortByTier` to correct function name `sortByPhaseIndex`
-- **Config dialog race condition**: Fixed UI glitch when closing settings via ESC
-  - Removed unreliable `config_shown` state variable from Config.lua
-  - Simplified `openConfigDialog()` to always navigate to addon category
-
-#### Code Consolidation
-- **TooltipSetItemByID**: Centralized in Utils.lua, removed duplicates from:
-  - BislistUI.lua (lines 1002-1009)
-  - ui/SlotRow.lua (lines 223-226)
-- **NormalizeItemID**: Removed duplicate from DataProvider.lua
-- **GetSpecIcon**: Removed wrapper from Bistooltip.lua, updated calls to use Utils.GetSpecIcon()
-
-#### Cleanup
-- **Dead code removed**:
-  - `Bistooltip_phases_string` variable (Bistooltip.lua)
-  - `HasDataStore()` method (Core.lua)
-  - Unused `config_shown` logic (Config.lua)
-- **Legacy files moved** to `legacy/` folder (~1200 lines):
-  - FlowView.lua
-  - GridView.lua
-  - ItemButton.lua
-- **Memory leak prevention**: Added `cleanupBisTooltip()` and `OnDisable()` for proper event unregistration
+- **Fixed**: Shift+Click linking for gems and enchants
+- **Fixed**: sortByTier runtime error
+- **Fixed**: Config dialog race condition
+- **Consolidated**: TooltipSetItemByID, NormalizeItemID, GetSpecIcon
+- **Cleanup**: Dead code removal, legacy files moved, memory leak prevention
 
 ## Credits
 

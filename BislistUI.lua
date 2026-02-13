@@ -5969,6 +5969,35 @@ function BistooltipAddon:initBislists()
     if Data and Data.ClearAllCaches then
         Data.ClearAllCaches()
     end
+
+    -- Register slash commands
+    LibStub("AceConsole-3.0"):RegisterChatCommand("bistooltip", function(msg)
+        msg = msg and msg:lower():trim() or ""
+        if msg == "config" or msg == "options" or msg == "settings" then
+            BistooltipAddon:openConfigDialog()
+        elseif msg == "reload" or msg == "refresh" then
+            BistooltipAddon:reloadData()
+        elseif msg == "help" then
+            DEFAULT_CHAT_FRAME:AddMessage("|cffffd000Bis-Tooltip Commands:|r")
+            DEFAULT_CHAT_FRAME:AddMessage("  |cffffff00/bistooltip|r - Toggle BIS window")
+            DEFAULT_CHAT_FRAME:AddMessage("  |cffffff00/bistooltip config|r - Open settings")
+            DEFAULT_CHAT_FRAME:AddMessage("  |cffffff00/bistooltip reload|r - Reload data")
+            DEFAULT_CHAT_FRAME:AddMessage("  |cffffff00/bis|r - Short alias")
+        else
+            BistooltipAddon:createMainFrame()
+        end
+    end)
+
+    LibStub("AceConsole-3.0"):RegisterChatCommand("bis", function(msg)
+        msg = msg and msg:lower():trim() or ""
+        if msg == "config" or msg == "c" then
+            BistooltipAddon:openConfigDialog()
+        elseif msg == "reload" or msg == "r" then
+            BistooltipAddon:reloadData()
+        else
+            BistooltipAddon:createMainFrame()
+        end
+    end)
 end
 
 -- Open Discord link
