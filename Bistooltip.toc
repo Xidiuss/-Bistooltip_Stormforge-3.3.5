@@ -2,7 +2,7 @@
 ## Title: Bis-Tooltip
 ## Notes: Shows Best-in-Slot information in tooltips and provides a BIS checklist UI
 ## Author: Silver [DisruptionAuras], refactored by Divian
-## Version: 2.2.0-3.3.5a
+## Version: 2.2.1-3.3.5a
 ## SavedVariables: BisTooltipDB
 ## OptionalDeps: DataStore, DataStore_Inventory, ElvUI, Tukui
 
@@ -29,14 +29,15 @@ Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 # ============================================================
-# Data Files (Order Independent)
+# Data Files
+# NOTE: EmblemData.lua must load after bislists (T8 set auto-registration)
 # ============================================================
 Loot_Sources.lua
-EmblemData.lua
 GemData.lua
 Bistooltip_classes.lua
 Bistooltip_wowtbc_bislists.lua
 Bistooltip_horde_to_ali.lua
+EmblemData.lua
 
 # ============================================================
 # Core Framework (ORDER MATTERS!)

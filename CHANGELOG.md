@@ -1,5 +1,21 @@
 # BisTooltip Changelog
 
+## Version 2.2.1-3.3.5a (2026-04-10)
+
+### Features
+
+1. **T8 Set Auto-Registration from BIS Lists** (`EmblemData.lua`)
+   - Added `RegisterT8SetFromBislist()` — automatically scans the T8 phase of all BIS lists and registers class-specific set piece items with the correct Emblem of Ascension II cost
+   - Slot costs: Head / Chest / Legs = 25 emblems, Shoulder / Hands = 19 emblems
+   - Items appearing in multiple classes (non-set drops) are skipped automatically
+   - Items already registered in any emblem table (e.g. Echo of the Titans drops) are preserved with their original cost
+   - Eliminates the need to manually maintain a list of T8 set piece IDs per spec
+
+2. **EmblemData Load Order Fix** (`.toc`)
+   - `EmblemData.lua` now loads after `Bistooltip_wowtbc_bislists.lua` to allow T8 set auto-registration at startup
+
+---
+
 ## Version 2.2.0-3.3.5a (2026-02-13)
 
 ### Bug Fixes

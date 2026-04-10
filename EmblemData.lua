@@ -512,8 +512,126 @@ RegisterEmblemItems("Emblem of Ascension", ASCENSION_ITEMS)
 
 
 -- ============================================================
--- Emblem of Ascension Items
+-- Emblem of Holy Ascension Items
 -- ============================================================
+
+local HOLYASCENSION_ITEMS = {
+
+-- Emblem of Ascension x1
+[131008] = 1,        -- Emblem of Ascension
+-- Emblem of Ascension x2
+[131010] = 2,        -- Echo of the Titans
+
+
+-- Emblem of Ascension T8 SET
+    --  x19
+[45642] = 19,        -- Gauntlets of the Wayward Protector
+[45657] = 19,        -- Mantle of the Wayward Protector
+    --  x25
+[45633] = 25,        -- Breastplate of the Wayward Protector
+[45654] = 25,        -- Legplates of the Wayward Protector
+[45639] = 25,        -- Crown of the Wayward Protector
+
+-- Emblem of Ascension x25
+[45502] = 25,        -- Helm of the Faceless
+[45334] = 25,        -- Unbreakable Chestguard
+[45481] = 25,        -- Gauntlets of Ruthless Reprisal
+[45466] = 25,        -- Scale of Fates
+[45251] = 25,        -- Shoulderplates of the Deconstructor
+[45139] = 25,        -- Dragonslayer's Brace
+[45451] = 25,        -- Frozen Loop
+[45326] = 25,        -- Platinum Band of the Aesir
+[45137] = 25,        -- Veranus' Bane
+[45540] = 25,        -- Bladebearer's Signet
+[45271] = 25,        -- Ironmender
+[45228] = 25,        -- Handguards of the Enclave
+[45262] = 25,        -- Necklace of Unerring Mettle
+[45250] = 25,        -- Crazed Construct Ring
+[45112] = 25,        -- The Leviathan's Coil
+[45111] = 25,        -- Mimiron's Inferno Couplings
+[45542] = 25,        -- Greaves of the Stonewarder
+[45469] = 25,        -- Sif's Promise
+[45148] = 25,        -- Living Flame
+[45247] = 25,        -- Signet of the Earthshaker
+[45158] = 25,        -- Heart of Iron
+[45490] = 25,        -- Pandora's Plea
+[45319] = 25,        -- Cloak of the Makers
+-- Emblem of Ascension x32
+[45133] = 32,        -- Pendant of Fiery Havoc
+[45135] = 32,        -- Boots of Fiery Resolution
+[45134] = 32,        -- Plated Leggings of Ruination
+[45136] = 32,        -- Shoulderpads of Dormant Energies
+[45241] = 32,        -- Belt of Colossal Rage
+[45242] = 32,        -- Drape of Mortal Downfall
+[45243] = 32,        -- Sapphire Amulet of Renewal
+[45244] = 32,        -- Greaves of Swift Vengeance
+[45245] = 32,        -- Shoulderpads of the Intruder
+[45443] = 32,        -- Charm of Meticulous Timing
+[45444] = 32,        -- Gloves of the Steady Hand
+[45445] = 32,        -- Breastplate of the Devoted
+[45446] = 32,        -- Grasps of Reason
+[45459] = 32,        -- Frigid Strength of Hodir
+[45460] = 32,        -- Bindings of Winter Gale
+[45461] = 32,        -- Drape of Icy Intent
+[45462] = 32,        -- Gloves of the Frozen Glade
+[45470] = 32,        -- Wisdom's Hold
+[45471] = 32,        -- Fate's Clutch
+[45472] = 32,        -- Warhelm of the Champion
+[45473] = 32,        -- Embrace of the Gladiator
+[45474] = 32,        -- Pauldrons of the Combatant
+[45485] = 32,        -- Bronze Pendant of the Vanir
+[45486] = 32,        -- Drape of the Sullen Goddess
+[45487] = 32,        -- Handguards of Revitalization
+[45488] = 32,        -- Leggings of the Enslaved Idol
+[45494] = 32,        -- Delirium's Touch
+[45495] = 32,        -- Conductive Seal
+[45496] = 32,        -- Titanskin Cloak
+[45497] = 32,        -- Crown of Luminescence
+[45517] = 32,        -- Pendulum of Infinity
+[45519] = 32,        -- Vestments of the Blind Denizen
+[45520] = 32,        -- Handwraps of the Vigilant
+[45534] = 32,        -- Seal of the Betrayed King
+[45536] = 32,        -- Legguards of Cunning Deception
+[45537] = 32,        -- Treads of the False Oracle
+[45587] = 32,        -- Bulwark of Algalon
+[45594] = 32,        -- Legplates of the Endless Void
+[45599] = 32,        -- Sabatons of Lifeless Night
+[45610] = 32,        -- Boundless Gaze
+[45611] = 32,        -- Solar Bindings
+[45615] = 32,        -- Planewalker Treads
+[45616] = 32,        -- Star-beaded Clutch
+[45617] = 32,        -- Cosmos
+[45619] = 32,        -- Starwatcher's Binding
+[45663] = 32,        -- Armbands of Bedlam
+[45665] = 32,        -- Pharos Gloves
+-- Emblem of Ascension x44
+[45132] = 44,        -- Golden Saronite Dragon
+[45442] = 44,        -- Sorthalis Hammer of the Watchers
+[45484] = 44,        -- Bladetwister
+[45518] = 44,        -- Flare of the Heavens
+[45535] = 44,        -- Show of Faith
+[45609] = 44,        -- Comet's Trail
+[45612] = 44,        -- Constellus
+[45620] = 44,        -- Starshard Edge
+-- Emblem of Ascension x52
+[45457] = 52,        -- Staff of Endless Winter
+[45516] = 52,        -- Voldrethar Dark Blade of Oblivion
+[45533] = 52,        -- Dark Edge of Depravity
+[45570] = 52,        -- Skyforge Crossbow
+[45613] = 52,        -- Dreambinder
+-- Emblem of Ascension x150
+[46017] = 150,        -- Val'anyr
+[131004] = 150,        -- Domhammer
+[128858] = 150,        -- Scythe of the Cat God
+
+}
+
+RegisterEmblemItems("Emblem of Ascension II", HOLYASCENSION_ITEMS)
+
+-- ============================================================
+-- Echo of the Titans items
+-- ============================================================
+
 
 local TITAN_ITEMS = {
 
@@ -582,6 +700,89 @@ local TITAN_ITEMS = {
 [45703] = 12,        -- Spark of Hope
 }
 RegisterEmblemItems("Echo of the Titans", TITAN_ITEMS)
+
+-- ============================================================
+-- T8 Set Auto-Registration (from BIS lists)
+-- ============================================================
+-- Scans the T8 phase of all BIS lists and registers class-specific
+-- set piece items with the appropriate Emblem of Ascension II cost.
+--
+-- Logic:
+--   - Only registers items that appear in exactly ONE class (class-specific = set piece)
+--   - Items shared across multiple classes (non-set drops) are skipped
+--   - Items already registered in any emblem table are preserved as-is
+--
+-- Slot costs (mirror the T8 token costs):
+--   Head / Chest / Legs  = 25 emblems
+--   Shoulder / Hands     = 19 emblems
+-- ============================================================
+
+local function RegisterT8SetFromBislist()
+    if not Bistooltip_wowtbc_bislists then return end
+
+    local slotCosts = {
+        ["Head"]     = 25,
+        ["Shoulder"] = 19,
+        ["Chest"]    = 25,
+        ["Hands"]    = 19,
+        ["Legs"]     = 25,
+    }
+
+    -- Pass 1: for every item in T8 set slots, record which classes use it
+    local itemClasses = {}
+    for className, classData in pairs(Bistooltip_wowtbc_bislists) do
+        for _, specData in pairs(classData) do
+            local t8Data = specData["T8"]
+            if t8Data then
+                for _, slotData in ipairs(t8Data) do
+                    if slotCosts[slotData["slot_name"]] then
+                        local i = 1
+                        while slotData[i] do
+                            local itemId = slotData[i]
+                            if not itemClasses[itemId] then
+                                itemClasses[itemId] = {}
+                            end
+                            itemClasses[itemId][className] = true
+                            i = i + 1
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    -- Pass 2: register class-specific items not already in any emblem table
+    for className, classData in pairs(Bistooltip_wowtbc_bislists) do
+        for _, specData in pairs(classData) do
+            local t8Data = specData["T8"]
+            if t8Data then
+                for _, slotData in ipairs(t8Data) do
+                    local slotName = slotData["slot_name"]
+                    local cost = slotCosts[slotName]
+                    if cost then
+                        local i = 1
+                        while slotData[i] do
+                            local itemId = slotData[i]
+                            local numClasses = 0
+                            for _ in pairs(itemClasses[itemId]) do
+                                numClasses = numClasses + 1
+                            end
+                            if numClasses == 1 and not Bistooltip_emblem_items[itemId] then
+                                Bistooltip_emblem_items[itemId] = {
+                                    currency = "Emblem of Ascension II",
+                                    cost = cost,
+                                }
+                            end
+                            i = i + 1
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+RegisterT8SetFromBislist()
 
 -- ============================================================
 -- Utility Functions
