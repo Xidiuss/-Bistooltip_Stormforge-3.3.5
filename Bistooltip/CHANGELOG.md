@@ -1,5 +1,23 @@
 # BisTooltip Changelog
 
+## Version 2.2.2-3.3.5a (2026-04-17)
+
+### Bug Fixes
+
+1. **Ctrl+Click Dressing Room** (`BislistUI.lua`)
+   - Pressing Ctrl+Left Click on any item icon in the BIS list now opens the Dressing Room with that item equipped
+   - Shift+Click still links the item to chat
+   - Plain click no longer accidentally inserts links (modifier key required)
+   - Applies to all item icons: main BIS list and checklist mode
+
+2. **ASCEND Mode — Missing Emblem of Ascension II Items** (`DataProvider.lua`)
+   - Fixed: items purchasable with Emblem of Ascension II were not shown in ASCEND filter mode
+   - Root cause: filter only checked for exact `"Emblem of Ascension"` currency, skipping `"Emblem of Ascension II"`
+   - Fix: changed to `string.find(currency, "Ascension")` — consistent with checklist group logic
+   - Now correctly shows T8 token set pieces, Ulduar drops, Val'anyr, Domhammer, and all other Ascension II items
+
+---
+
 ## Version 2.2.1-3.3.5a (2026-04-10)
 
 ### Features
@@ -123,6 +141,8 @@
 
 | Version | Key Changes |
 |---------|-------------|
+| 2.2.2 | Ctrl+Click dressing room, ASCEND mode Ascension II fix |
+| 2.2.1 | T8 set auto-registration from BIS lists |
 | 2.2.0 | Slash commands fix, cross-faction T9 tooltip fix |
 | 1.3.0 | Lock Phase, Customize Mode, Slot Locking |
 | 1.3.1 | Click-to-Swap, Reset Button |

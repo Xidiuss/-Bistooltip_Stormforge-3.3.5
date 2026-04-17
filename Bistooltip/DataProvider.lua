@@ -605,7 +605,7 @@ function BistooltipData.SlotHasAscensionSource(slot, emblemFilterMode, isHorde)
     for _, iid in ipairs(slot) do
         local id = BistooltipData.GetDisplayItemID(iid, isHorde)
         local cost, currency = BistooltipData.GetEmblemCost(id)
-        if currency == "Emblem of Ascension" then
+        if currency and string.find(currency, "Ascension") then
             return true
         end
     end

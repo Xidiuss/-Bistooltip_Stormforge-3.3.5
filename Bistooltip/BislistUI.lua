@@ -1137,10 +1137,11 @@ local function CreatePooledItemIcon(itemId, size, parent, callbacks)
     -- Click handlers
     icon:SetScript("OnClick", function(self, button)
         if button == "LeftButton" then
-            -- Check customize mode
-            if State.Get("customizeMode") and callbacks and callbacks.onLeftClick then
+            if IsControlKeyDown() and itemLink then
+                DressUpItemLink(itemLink)
+            elseif State.Get("customizeMode") and callbacks and callbacks.onLeftClick then
                 callbacks.onLeftClick(self, displayId, itemId)
-            elseif itemLink then
+            elseif IsShiftKeyDown() and itemLink then
                 ChatEdit_InsertLink(itemLink)
             end
         elseif button == "RightButton" and callbacks and callbacks.onRightClick then
@@ -3203,7 +3204,11 @@ local function CreateCustomSlotRow(slot, yOffset, rowIndex)
                                 print("|cffff8800Bistooltip:|r Unlock the slot first (click key icon)")
                             else
                                 local _, link = GetItemInfo(capturedDisplayId)
-                                if link then ChatEdit_InsertLink(link) end
+                                if IsControlKeyDown() then
+                                    if link then DressUpItemLink(link) end
+                                elseif IsShiftKeyDown() then
+                                    if link then ChatEdit_InsertLink(link) end
+                                end
                             end
                         end
                     end)
