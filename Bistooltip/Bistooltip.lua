@@ -3,6 +3,14 @@
 -- ============================================================
 
 local eventFrame = CreateFrame("Frame", nil, UIParent)
+local tokenInfoPendingFrame = CreateFrame("Frame", nil, UIParent)
+local ctrlKeyDown = false
+
+local function IsCtrlHeld()
+    if ctrlKeyDown then return true end
+    if IsControlKeyDown and IsControlKeyDown() then return true end
+    return false
+end
 
 -- Import utilities
 local Utils = BistooltipUtils
@@ -272,12 +280,16 @@ local function specHighlighted(class_name, spec_name)
     return hs and hs.spec_name == spec_name and hs.class_name == class_name
 end
 
-local function specFiltered(class_name, spec_name)
+local function specFiltered(class_name, spec_name, ctrlDown)
     if specHighlighted(class_name, spec_name) then
         return false
     end
     if BistooltipAddon and BistooltipAddon.db and BistooltipAddon.db.char then
-        local fs = BistooltipAddon.db.char.filter_specs
+        local db = BistooltipAddon.db.char
+        if db.filter_specs_with_ctrl and not ctrlDown then
+            return true
+        end
+        local fs = db.filter_specs
         if fs and fs[class_name] then
             return not fs[class_name][spec_name]
         end
@@ -292,12 +304,12 @@ local function classNamesFiltered()
     return false
 end
 
-local function getFilteredItem(item)
+local function getFilteredItem(item, ctrlDown)
     local filtered_item = {}
     for ki, spec in ipairs(item) do
         local class_name = spec.class_name
         local spec_name = spec.spec_name
-        if not specFiltered(class_name, spec_name) then
+        if not specFiltered(class_name, spec_name, ctrlDown) then
             table.insert(filtered_item, spec)
         end
     end
@@ -383,9 +395,33 @@ function searchIDInBislistsClassSpec(structure, id, class, spec, filterByBlocked
 
     if #paths > 0 then
         return table.concat(paths, " / ")
-    else
-        return nil
     end
+    return nil
+end
+
+local function ResolveBisPhases(itemId, class, spec)
+    local phases = searchIDInBislistsClassSpec(Bistooltip_bislists, itemId, class, spec, true)
+    if phases then
+        return phases, itemId
+    end
+
+    if not (BistooltipAddon and BistooltipAddon.db and BistooltipAddon.db.char) then
+        return nil, itemId
+    end
+    if BistooltipAddon.db.char.show_token_bis == false then
+        return nil, itemId
+    end
+
+    if Bistooltip_IsTierToken and Bistooltip_IsTierToken(itemId) then
+        local proxyId = Bistooltip_GetTokenProxyGearId(class, spec, itemId)
+        if proxyId then
+            phases = searchIDInBislistsClassSpec(Bistooltip_bislists, proxyId, class, spec, true)
+            if phases then
+                return phases, proxyId
+            end
+        end
+    end
+    return nil, itemId
 end
 
 -- ============================================================
@@ -620,7 +656,7 @@ end
 
 local function OnGameTooltipSetItem(tooltip)
     local shiftMode = IsShiftKeyDown() and true or false
-    local ctrlDown = IsControlKeyDown() and true or false
+    local ctrlDown = IsCtrlHeld()
 
     local _, link = tooltip:GetItem()
     if not link then return end
@@ -633,15 +669,36 @@ local function OnGameTooltipSetItem(tooltip)
     -- BIS lists store Horde IDs; cross-faction/Alliance items need reverse mapping
     local bisItemId = GetBisCanonicalID(itemId)
 
+    -- Tier tokens: item name may load after first hover (RU/EN client)
+    if (not GetItemInfo(bisItemId)) and Bistooltip_ClearTokenMetaCache then
+        tokenInfoPendingFrame.itemId = bisItemId
+        tokenInfoPendingFrame.elapsed = 0
+        tokenInfoPendingFrame:SetScript("OnUpdate", function(self, e)
+            self.elapsed = (self.elapsed or 0) + e
+            if GetItemInfo(self.itemId) or self.elapsed > 2 then
+                self:SetScript("OnUpdate", nil)
+                if GetItemInfo(self.itemId) then
+                    Bistooltip_ClearTokenMetaCache(self.itemId)
+                    if GameTooltip and GameTooltip:IsShown() then
+                        RefreshAnyTooltip(GameTooltip)
+                    end
+                    if ItemRefTooltip and ItemRefTooltip:IsShown() then
+                        RefreshAnyTooltip(ItemRefTooltip)
+                    end
+                end
+            end
+        end)
+    end
+
     -- Check if BIS data is loaded
     if not Bistooltip_bislists or not Bistooltip_spec_icons then
         return
     end
     
-    -- Check tooltip_with_ctrl option - if enabled, only show BIS info when CTRL is held
-    local tooltipWithCtrl = BistooltipAddon and BistooltipAddon.db and BistooltipAddon.db.char and BistooltipAddon.db.char.tooltip_with_ctrl
+    local db = BistooltipAddon and BistooltipAddon.db and BistooltipAddon.db.char
+    local tooltipWithCtrl = db and db.tooltip_with_ctrl
     if tooltipWithCtrl and not ctrlDown then
-        return  -- Don't show BIS info unless CTRL is held
+        return
     end
 
     -- Your specialization section (only for rare+ equippable items)
@@ -662,8 +719,11 @@ local function OnGameTooltipSetItem(tooltip)
 
     -- Store player class/spec for later filtering
     local playerClass, playerSpec = nil, nil
-    
-    if showSpec then
+    local isTierTokenItem = Bistooltip_IsTierToken and Bistooltip_IsTierToken(bisItemId)
+    local showTokenBis = not BistooltipAddon.db.char or BistooltipAddon.db.char.show_token_bis ~= false
+    local showYourClass = showSpec or (isTierTokenItem and showTokenBis)
+
+    if showYourClass then
         local pClass, pSpec = GetPlayerClassSpecKeys()
         playerClass, playerSpec = pClass, pSpec  -- Save for later
         
@@ -671,7 +731,7 @@ local function OnGameTooltipSetItem(tooltip)
             tooltip:AddLine(" ", 1, 1, 0)
             tooltip:AddLine("Your Class:", 1, 1, 1)
 
-            local foundPhases = searchIDInBislistsClassSpec(Bistooltip_bislists, bisItemId, pClass, pSpec, true)
+            local foundPhases, lookupId = ResolveBisPhases(bisItemId, pClass, pSpec)
             local icon = Utils.GetSpecIcon(pClass, pSpec)
             
             -- Build spec text with optional highlighting
@@ -686,7 +746,7 @@ local function OnGameTooltipSetItem(tooltip)
             local left = (icon and string.format("|T%s:16|t ", icon) or "") .. specText
 
             if foundPhases then
-                local rank = NormalizeDualSlotRank(itemId, pClass, pSpec, ParseBestRankFromPhases(foundPhases))
+                local rank = NormalizeDualSlotRank(lookupId, pClass, pSpec, ParseBestRankFromPhases(foundPhases))
                 tooltip:AddDoubleLine(left, RankTagForSelf(rank), 1, 1, 1, 1, 1, 1)
                 
                 -- Check if we should hide Rank: line
@@ -712,9 +772,11 @@ local function OnGameTooltipSetItem(tooltip)
                 end
                 
                 if not hideRankLine then
-                    tooltip:AddDoubleLine("Rank:", tostring(FormatPhasesString(itemId, pClass, pSpec, foundPhases)), 1, 1, 1, 1, 1, 0)
+                    tooltip:AddDoubleLine("Rank:", tostring(FormatPhasesString(lookupId, pClass, pSpec, foundPhases)), 1, 1, 1, 1, 1, 0)
                 end
-            else
+            elseif isTierTokenItem and showTokenBis then
+                tooltip:AddDoubleLine(left, "|cffff3b3bNO BIS|r", 1, 1, 1, 1, 1, 1)
+            elseif showSpec then
                 tooltip:AddDoubleLine(left, "|cffff3b3bNO BIS|r", 1, 1, 1, 1, 1, 1)
             end
             tooltip:AddLine(" ", 1, 1, 0)
@@ -733,8 +795,8 @@ local function OnGameTooltipSetItem(tooltip)
                 local isPlayerSpec = (class == playerClass and spec == playerSpec)
                 
                 -- Apply spec filtering - skip filtered specs AND player's spec
-                if not specFiltered(class, spec) and not isPlayerSpec then
-                    local foundPhases = searchIDInBislistsClassSpec(Bistooltip_bislists, bisItemId, class, spec, true)
+                if not specFiltered(class, spec, ctrlDown) and not isPlayerSpec then
+                    local foundPhases, bisLookupId = ResolveBisPhases(bisItemId, class, spec)
                     if foundPhases then
                         anyFound = true
                         local rank = ParseBestRankFromPhases(foundPhases)
@@ -756,6 +818,7 @@ local function OnGameTooltipSetItem(tooltip)
                             bestPhase = bestPhase,
                             classIdx = tonumber(classOrder[class]) or 999,
                             isHighlighted = isHighlighted,
+                            bisLookupId = bisLookupId,
                         })
                     end
                 end
@@ -786,7 +849,7 @@ local function OnGameTooltipSetItem(tooltip)
 
         for i = 1, #entries do
             local e = entries[i]
-            local r = NormalizeDualSlotRank(itemId, e.class, e.spec, e.rank)
+            local r = NormalizeDualSlotRank(e.bisLookupId or itemId, e.class, e.spec, e.rank)
             e._normRank = r
 
             if r and r.kind == "BIS" then
@@ -854,8 +917,7 @@ local function OnGameTooltipSetItem(tooltip)
         return true
     end
 
-    -- Default view: full list (sorted) / CTRL focus view (filtered, only when tooltip_with_ctrl is OFF)
-    local focusMode = (not shiftMode) and ctrlDown and not tooltipWithCtrl
+    local focusMode = false
 
     -- Rank ordering: BIS > BIS2 > ALT1 > ALT2 ... > NO BIS
     local function RankWeight(r)
@@ -871,7 +933,7 @@ local function OnGameTooltipSetItem(tooltip)
 
     for i = 1, #entries do
         local e = entries[i]
-        e._normRank = NormalizeDualSlotRank(itemId, e.class, e.spec, e.rank)
+        e._normRank = NormalizeDualSlotRank(e.bisLookupId or itemId, e.class, e.spec, e.rank)
         if (not focusMode) or isFocusRank(e._normRank) then
             local c = e.class
             local b = buckets[c]
@@ -951,7 +1013,7 @@ local function OnGameTooltipSetItem(tooltip)
                 specText = "|cff00ff00>>|r " .. specText .. " |cff00ff00<<|r"
             end
             local leftText = indent .. iconString .. specText
-            tooltip:AddDoubleLine(leftText, FormatPhasesString(itemId, e.class, e.spec, e.phases), 1, 1, 1, 1, 1, 0)
+            tooltip:AddDoubleLine(leftText, FormatPhasesString(e.bisLookupId or itemId, e.class, e.spec, e.phases), 1, 1, 1, 1, 1, 0)
         end
     end
 
@@ -976,9 +1038,16 @@ end
 -- ============================================================
 
 function BistooltipAddon:initBisTooltip()
+    if Bistooltip_BuildTokenRegistry then
+        Bistooltip_BuildTokenRegistry()
+    end
+    ctrlKeyDown = IsControlKeyDown and IsControlKeyDown() or false
     eventFrame:RegisterEvent("MODIFIER_STATE_CHANGED")
-    eventFrame:SetScript("OnEvent", function(_, _, e_key)
-        if e_key ~= "RCTRL" and e_key ~= "LCTRL" and e_key ~= "RSHIFT" and e_key ~= "LSHIFT" then
+    eventFrame:SetScript("OnEvent", function(_, event, key, state)
+        if event ~= "MODIFIER_STATE_CHANGED" then return end
+        if key == "LCTRL" or key == "RCTRL" then
+            ctrlKeyDown = (state == 1)
+        elseif key ~= "RSHIFT" and key ~= "LSHIFT" then
             return
         end
         if GameTooltip and GameTooltip:IsShown() then

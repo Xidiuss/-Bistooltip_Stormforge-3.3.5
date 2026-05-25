@@ -39,6 +39,7 @@ local db_defaults = {
         
         -- Filtering
         filter_specs = {},
+        filter_specs_with_ctrl = false,
         highlight_spec = {},
         filter_class_names = true,
         show_item_source = true,
@@ -49,6 +50,7 @@ local db_defaults = {
         -- UI preferences
         minimap_icon = true,
         tooltip_with_ctrl = false,
+        show_token_bis = true,
         bis_checklist = false,
         gem_detailed = false,
         enchant_detailed = false,
@@ -135,6 +137,35 @@ local configTable = {
             end,
             get = function(info)
                 return BistooltipAddon.db.char.tooltip_with_ctrl
+            end
+        },
+        filter_specs_with_ctrl = {
+            name = "Show Filtering Spec info only with Ctrl",
+            order = 3.1,
+            desc = "Without Ctrl: only the highlighted spec is shown. With Ctrl: highlighted spec plus specs enabled in Spec Filtering.",
+            type = "toggle",
+            width = "full",
+            set = function(info, val)
+                BistooltipAddon.db.char.filter_specs_with_ctrl = val
+            end,
+            get = function(info)
+                return BistooltipAddon.db.char.filter_specs_with_ctrl
+            end
+        },
+        show_token_bis = {
+            name = "Show BIS on tier tokens",
+            order = 3.2,
+            desc = "Show BIS spec list on tier tokens via matching gear from your BIS lists",
+            type = "toggle",
+            width = "full",
+            set = function(info, val)
+                BistooltipAddon.db.char.show_token_bis = val
+            end,
+            get = function(info)
+                if BistooltipAddon.db.char.show_token_bis == nil then
+                    return true
+                end
+                return BistooltipAddon.db.char.show_token_bis
             end
         },
         gem_detailed = {
@@ -520,6 +551,9 @@ function BistooltipAddon:changeSpec(spec_name)
     end
     if self.reloadData then
         self:reloadData()
+    end
+    if Bistooltip_BuildTokenRegistry then
+        Bistooltip_BuildTokenRegistry()
     end
 end
 
