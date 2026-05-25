@@ -37,6 +37,8 @@ GemData.lua
 Bistooltip_classes.lua
 Bistooltip_wowtbc_bislists.lua
 Bistooltip_horde_to_ali.lua
+TokenLinks.lua
+TokenData.lua
 EmblemData.lua
 
 # ============================================================
